@@ -1,35 +1,51 @@
 
-
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
-import PatientList from './components/PatientList';
-import ExamView from './components/ExamView';
-import BillingView from './components/BillingView';
-import InventoryView from './components/InventoryView'; // Keeping for backward compatibility or can remove if fully replaced
 import LoginView from './components/LoginView';
-import ReceptionView from './components/ReceptionView';
-import AppointmentView from './components/AppointmentView';
-import QueueView from './components/QueueView';
-import NurseStationView from './components/NurseStationView';
-import LabView from './components/LabView';
-import RadiologyView from './components/RadiologyView';
-import WardView from './components/WardView';
-import OTView from './components/OTView';
-import CSSDView from './components/CSSDView';
-import FeaturesView from './components/FeaturesView';
-import DepartmentsView from './components/DepartmentsView';
-import PurchaseView from './components/PurchaseView';
-import PharmacyView from './components/PharmacyView';
-import OpticalView from './components/OpticalView';
-import StoresView from './components/StoresView';
-import LinenView from './components/LinenView';
-import AssetView from './components/AssetView';
-import AccountingView from './components/AccountingView';
-import MISView from './components/MISView';
-import CommunicationView from './components/CommunicationView';
 import { AppView, Patient, User, UserRole } from './types';
 import { api } from './services/apiService';
+import { RefreshCw } from 'lucide-react';
+
+// Lazy Load Views for Performance Optimization (Code Splitting)
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
+const PatientList = React.lazy(() => import('./components/PatientList'));
+const ExamView = React.lazy(() => import('./components/ExamView'));
+const BillingView = React.lazy(() => import('./components/BillingView'));
+const InventoryView = React.lazy(() => import('./components/InventoryView')); 
+const ReceptionView = React.lazy(() => import('./components/ReceptionView'));
+const AppointmentView = React.lazy(() => import('./components/AppointmentView'));
+const QueueView = React.lazy(() => import('./components/QueueView'));
+const NurseStationView = React.lazy(() => import('./components/NurseStationView'));
+const LabView = React.lazy(() => import('./components/LabView'));
+const RadiologyView = React.lazy(() => import('./components/RadiologyView'));
+const WardView = React.lazy(() => import('./components/WardView'));
+const OTView = React.lazy(() => import('./components/OTView'));
+const CSSDView = React.lazy(() => import('./components/CSSDView'));
+const FeaturesView = React.lazy(() => import('./components/FeaturesView'));
+const DepartmentsView = React.lazy(() => import('./components/DepartmentsView'));
+const PurchaseView = React.lazy(() => import('./components/PurchaseView'));
+const PharmacyView = React.lazy(() => import('./components/PharmacyView'));
+const OpticalView = React.lazy(() => import('./components/OpticalView'));
+const StoresView = React.lazy(() => import('./components/StoresView'));
+const LinenView = React.lazy(() => import('./components/LinenView'));
+const AssetView = React.lazy(() => import('./components/AssetView'));
+const AccountingView = React.lazy(() => import('./components/AccountingView'));
+const MISView = React.lazy(() => import('./components/MISView'));
+const CommunicationView = React.lazy(() => import('./components/CommunicationView'));
+const NABHView = React.lazy(() => import('./components/NABHView'));
+const TelemedicineView = React.lazy(() => import('./components/TelemedicineView'));
+const ARVRTherapyView = React.lazy(() => import('./components/ARVRTherapyView'));
+const ResearchView = React.lazy(() => import('./components/ResearchView'));
+
+// Loading Fallback Component
+const LoadingView = () => (
+    <div className="flex h-full items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center">
+            <RefreshCw className="w-8 h-8 text-primary-500 animate-spin mb-4" />
+            <p className="text-slate-500 font-medium">Loading Module...</p>
+        </div>
+    </div>
+);
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -40,14 +56,19 @@ const App: React.FC = () => {
     const loggedInUser = await api.auth.login(role);
     setUser(loggedInUser);
     
-    // Set default view based on role
-    if (role === 'PHARMACIST') setCurrentView(AppView.PHARMACY);
-    else if (role === 'STORE_MANAGER') setCurrentView(AppView.PURCHASE);
-    else if (role === 'RECEPTIONIST') setCurrentView(AppView.RECEPTION);
-    else if (role === 'NURSE') setCurrentView(AppView.NURSE_STATION);
-    else if (role === 'LAB_TECH') setCurrentView(AppView.LABORATORY);
-    else if (role === 'ACCOUNTANT') setCurrentView(AppView.ACCOUNTING);
-    else setCurrentView(AppView.DASHBOARD);
+    // Set default view based on specific role for personalized experience
+    switch(role) {
+        case 'PHARMACIST': setCurrentView(AppView.PHARMACY); break;
+        case 'STORE_MANAGER': setCurrentView(AppView.PURCHASE); break;
+        case 'RECEPTIONIST': setCurrentView(AppView.RECEPTION); break;
+        case 'NURSE': setCurrentView(AppView.NURSE_STATION); break;
+        case 'LAB_TECH': setCurrentView(AppView.LABORATORY); break;
+        case 'ACCOUNTANT': setCurrentView(AppView.ACCOUNTING); break;
+        case 'OPTOMETRIST': setCurrentView(AppView.QUEUE); break;
+        case 'DOCTOR':
+        case 'INTERN':
+        default: setCurrentView(AppView.DASHBOARD);
+    }
   };
 
   const handleLogout = () => {
@@ -57,102 +78,60 @@ const App: React.FC = () => {
   };
 
   const handlePatientSelect = (patient: Patient) => {
-    setSelectedPatient(patient);
-    setCurrentView(AppView.EXAM);
+    const allowedRoles: UserRole[] = ['DOCTOR', 'OPTOMETRIST', 'INTERN'];
+    if (user && allowedRoles.includes(user.role)) {
+        setSelectedPatient(patient);
+        setCurrentView(AppView.EXAM);
+    } else {
+        alert("Access Denied: Only Clinical Staff can enter the Examination Module.");
+    }
   };
 
-  // Content Rendering Logic based on View and Role Access
   const renderContent = () => {
     if (!user) return null;
 
-    switch (currentView) {
-      case AppView.DASHBOARD:
-        return <Dashboard />;
-      case AppView.RECEPTION:
-        return <ReceptionView onChangeView={setCurrentView} />;
-      case AppView.APPOINTMENTS:
-        return <AppointmentView />;
-      case AppView.QUEUE:
-        return <QueueView />;
-      case AppView.DEPARTMENTS:
-        return <DepartmentsView />;
-      case AppView.PATIENTS:
-        return <PatientList onSelectPatient={handlePatientSelect} />;
-      case AppView.EXAM:
-        if (selectedPatient) {
-          return (
-            <ExamView 
-              patient={selectedPatient} 
-              onBack={() => {
-                setSelectedPatient(null);
-                setCurrentView(AppView.PATIENTS);
-              }} 
-            />
-          );
-        }
-        return <PatientList onSelectPatient={handlePatientSelect} />; // Fallback
-      
-      // Clinical Modules
-      case AppView.NURSE_STATION:
-        return <NurseStationView />;
-      case AppView.LABORATORY:
-        return <LabView />;
-      case AppView.RADIOLOGY:
-        return <RadiologyView />;
-      case AppView.WARD_MANAGEMENT:
-        return <WardView />;
-      case AppView.OT_MANAGEMENT:
-        return <OTView />;
-      case AppView.CSSD:
-        return <CSSDView />;
-      
-      case AppView.EQUIPMENT:
-          return (
-            <div className="flex items-center justify-center h-full text-slate-400 bg-slate-50">
-                <div className="text-center">
-                    <p className="text-xl font-medium text-slate-600">Biomedical Equipment</p>
-                    <p className="text-sm mt-2">Manage connected devices, maintenance schedules, and integration logs.</p>
-                </div>
-            </div>
-          );
-
-      // Operations & Non-Clinical
-      case AppView.BILLING:
-        return <BillingView />;
-      
-      case AppView.PURCHASE:
-        return <PurchaseView />;
-      case AppView.PHARMACY:
-        return <PharmacyView />;
-      case AppView.OPTICALS:
-        return <OpticalView />;
-      case AppView.STORES:
-        return <StoresView />;
-      case AppView.LINEN:
-        return <LinenView />;
-      case AppView.ASSETS:
-        return <AssetView />;
-      case AppView.ACCOUNTING:
-        return <AccountingView />;
-      case AppView.MIS:
-        return <MISView />;
-      case AppView.COMMUNICATION:
-        return <CommunicationView />;
-        
-      case AppView.FEATURES:
-        return <FeaturesView />;
-      case AppView.SETTINGS:
-        return (
-            <div className="flex items-center justify-center h-full text-slate-400">
-                <div className="text-center">
-                    <p className="text-xl font-medium">Settings</p>
-                    <p className="text-sm mt-2">Server Configuration & PMS Parameters.</p>
-                </div>
-            </div>
-        );
-      default:
-        return <Dashboard />;
-    }
+    return (
+        <Suspense fallback={<LoadingView />}>
+            {(() => {
+                switch (currentView) {
+                    case AppView.DASHBOARD: return <Dashboard />;
+                    case AppView.RECEPTION: return <ReceptionView onChangeView={setCurrentView} />;
+                    case AppView.APPOINTMENTS: return <AppointmentView />;
+                    case AppView.QUEUE: return <QueueView />;
+                    case AppView.DEPARTMENTS: return <DepartmentsView />;
+                    case AppView.TELEMEDICINE: return <TelemedicineView />;
+                    case AppView.PATIENTS: return <PatientList onSelectPatient={handlePatientSelect} userRole={user.role} />;
+                    case AppView.EXAM:
+                        return selectedPatient 
+                            ? <ExamView patient={selectedPatient} currentUser={user} onBack={() => { setSelectedPatient(null); setCurrentView(AppView.PATIENTS); }} />
+                            : <PatientList onSelectPatient={handlePatientSelect} userRole={user.role} />;
+                    case AppView.NURSE_STATION: return <NurseStationView />;
+                    case AppView.LABORATORY: return <LabView />;
+                    case AppView.RADIOLOGY: return <RadiologyView />;
+                    case AppView.WARD_MANAGEMENT: return <WardView />;
+                    case AppView.OT_MANAGEMENT: return <OTView />;
+                    case AppView.CSSD: return <CSSDView />;
+                    case AppView.EQUIPMENT: return <div className="p-10 text-center text-slate-500">Equipment Module</div>;
+                    case AppView.ARVR_THERAPY: return <ARVRTherapyView />;
+                    case AppView.RESEARCH: return <ResearchView />;
+                    case AppView.BILLING: return <BillingView />;
+                    case AppView.PURCHASE: return <PurchaseView />;
+                    case AppView.PHARMACY: return <PharmacyView />;
+                    case AppView.OPTICALS: return <OpticalView />;
+                    case AppView.STORES: return <StoresView />;
+                    case AppView.LINEN: return <LinenView />;
+                    case AppView.ASSETS: return <AssetView />;
+                    case AppView.ACCOUNTING: return <AccountingView />;
+                    case AppView.MIS: return <MISView />;
+                    case AppView.NABH_QUALITY: return <NABHView />;
+                    case AppView.COMMUNICATION: return <CommunicationView />;
+                    case AppView.FEATURES: return <FeaturesView />;
+                    case AppView.SETTINGS: return <div className="p-10 text-center text-slate-500">Settings</div>;
+                    default: return <Dashboard />;
+                }
+            })()}
+        </Suspense>
+    );
   };
 
   if (!user) {
@@ -161,19 +140,15 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-slate-100 font-sans text-slate-900">
-      {/* Sidebar Navigation */}
       <Sidebar 
         currentView={currentView} 
         onChangeView={(view) => {
-          // If navigating away from exam, clear selection
           if (view !== AppView.EXAM) setSelectedPatient(null);
           setCurrentView(view);
         }}
         user={user}
         onLogout={handleLogout}
       />
-
-      {/* Main Content Area */}
       <main className="flex-1 h-full overflow-hidden relative">
         {renderContent()}
       </main>

@@ -6,12 +6,53 @@ export interface Patient {
   age: number;
   gender: 'Male' | 'Female' | 'Other';
   phone: string;
+  email?: string;
   lastVisit: string;
+  nextAppointment?: string;
   condition: string;
   avatarUrl: string;
   ehrId?: string; // External EHR ID
-  insuranceProvider?: string;
   type?: 'Regular' | 'Corporate' | 'Insurance';
+  
+  // ABDM / India Specific
+  abhaId?: string; // 14 digit Ayushman Bharat ID
+  abhaAddress?: string; // e.g., name@abdm
+  kycStatus?: 'Verified' | 'Pending' | 'None';
+  consentStatus?: 'Granted' | 'Revoked' | 'Partial';
+
+  // Insurance Details
+  insurance?: {
+    provider: string;
+    policyNumber: string;
+    validity: string;
+    coverageType: string;
+  };
+
+  // Medical History (Systemic & Ocular)
+  history: {
+    systemic: string[]; // e.g., Diabetes, Hypertension
+    ocular: string[]; // e.g., Glaucoma, Previous Surgery
+    allergies: string[];
+    medications: string[];
+  };
+
+  // Clinical Snapshot (Most recent)
+  clinicalSnapshot?: {
+    visualAcuityOD: string;
+    visualAcuityOS: string;
+    iopOD: string;
+    iopOS: string;
+    cdRatio?: string;
+  };
+
+  // Cloud Documents (S3 Refs)
+  documents: {
+    id: string;
+    name: string;
+    type: 'Scan' | 'Report' | 'Prescription';
+    date: string;
+    url: string;
+  }[];
 }
 
 export type Specialty = 
@@ -39,7 +80,7 @@ export interface Appointment {
   doctorName: string;
   date: string;
   time: string;
-  type: 'New Visit' | 'Follow-up' | 'Surgery' | 'Web Booking';
+  type: 'New Visit' | 'Follow-up' | 'Surgery' | 'Web Booking' | 'Tele-Consult';
   status: 'Scheduled' | 'Checked-In' | 'Completed' | 'Cancelled';
 }
 
@@ -93,7 +134,7 @@ export interface InventoryItem {
 
 export interface ScanImage {
   id: string;
-  type: 'OCT' | 'Fundus' | 'Topography';
+  type: 'OCT' | 'Fundus' | 'Topography' | 'Visual Field' | '3D Model';
   url: string;
   date: string;
   aiAnalysis?: string;
@@ -192,6 +233,7 @@ export enum AppView {
   APPOINTMENTS = 'APPOINTMENTS', 
   QUEUE = 'QUEUE',
   DEPARTMENTS = 'DEPARTMENTS', 
+  TELEMEDICINE = 'TELEMEDICINE',
   
   // Clinical Core
   PATIENTS = 'PATIENTS',
@@ -205,6 +247,10 @@ export enum AppView {
   WARD_MANAGEMENT = 'WARD_MANAGEMENT',
   CSSD = 'CSSD',
   EQUIPMENT = 'EQUIPMENT',
+  
+  // Advanced Tech
+  ARVR_THERAPY = 'ARVR_THERAPY',
+  RESEARCH = 'RESEARCH',
 
   // Operations
   BILLING = 'BILLING',
@@ -219,13 +265,24 @@ export enum AppView {
   ACCOUNTING = 'ACCOUNTING',
   MIS = 'MIS',
   COMMUNICATION = 'COMMUNICATION',
+  NABH_QUALITY = 'NABH_QUALITY',
   
   // Support
   FEATURES = 'FEATURES',
   SETTINGS = 'SETTINGS'
 }
 
-export type UserRole = 'DOCTOR' | 'RECEPTIONIST' | 'PHARMACIST' | 'ADMIN' | 'NURSE' | 'LAB_TECH' | 'STORE_MANAGER' | 'ACCOUNTANT';
+export type UserRole = 
+  | 'DOCTOR' 
+  | 'RECEPTIONIST' 
+  | 'PHARMACIST' 
+  | 'ADMIN' 
+  | 'NURSE' 
+  | 'LAB_TECH' 
+  | 'STORE_MANAGER' 
+  | 'ACCOUNTANT'
+  | 'OPTOMETRIST'
+  | 'INTERN';
 
 export interface User {
   id: string;
@@ -238,4 +295,25 @@ export interface AIResponse {
   text: string;
   loading: boolean;
   error: string | null;
+}
+
+// --- AI Specific Types ---
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'ai';
+  text: string;
+  timestamp: Date;
+  metadata?: {
+      type: 'chart' | 'confidence' | 'source';
+      data?: any;
+  };
+}
+
+export interface DecisionSupport {
+  condition: string;
+  confidence: number; // 0-100
+  evidence: string[];
+  recommendations: string[];
+  modelConsensus: string; // e.g. "All models agree"
 }

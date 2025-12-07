@@ -1,7 +1,6 @@
 
-
-import React, { useEffect, useState } from 'react';
-import { LayoutDashboard, Users, Eye, Settings, Cloud, CreditCard, Package, Wifi, WifiOff, LogOut, Calendar, ClipboardList, Timer, Stethoscope, TestTube, BedDouble, Scissors, Recycle, HardDrive, Monitor, HelpCircle, ShoppingCart, Archive, Pill, Glasses, Shirt, Briefcase, BarChart3, Mail, Activity, Building2 } from 'lucide-react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { LayoutDashboard, Users, Eye, Settings, Cloud, CreditCard, Package, Wifi, WifiOff, LogOut, Calendar, ClipboardList, Timer, Stethoscope, TestTube, BedDouble, Scissors, Recycle, HardDrive, Monitor, HelpCircle, ShoppingCart, Archive, Pill, Glasses, Shirt, Briefcase, BarChart3, Mail, Activity, Building2, Smartphone, Video, Shield, Award, Headset, BookOpen } from 'lucide-react';
 import { AppView, User } from '../types';
 import { api } from '../services/apiService';
 
@@ -20,33 +19,38 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, user, onLo
     api.system.checkConnection().then(() => setIsConnected(true));
   }, []);
 
-  const allMenuItems = [
-    { id: AppView.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard, roles: ['DOCTOR', 'RECEPTIONIST', 'ADMIN', 'NURSE', 'STORE_MANAGER', 'ACCOUNTANT'] },
+  const allMenuItems = useMemo(() => [
+    { id: AppView.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard, roles: ['DOCTOR', 'RECEPTIONIST', 'ADMIN', 'NURSE', 'STORE_MANAGER', 'ACCOUNTANT', 'OPTOMETRIST', 'INTERN'] },
     
     // Practice Management Section
     { id: AppView.RECEPTION, label: 'Front Desk', icon: ClipboardList, roles: ['RECEPTIONIST', 'ADMIN'] },
-    { id: AppView.APPOINTMENTS, label: 'Schedule', icon: Calendar, roles: ['RECEPTIONIST', 'DOCTOR', 'ADMIN'] },
-    { id: AppView.QUEUE, label: 'Queue Flow', icon: Timer, roles: ['RECEPTIONIST', 'DOCTOR', 'ADMIN', 'NURSE'] },
-    { id: AppView.DEPARTMENTS, label: 'Departments', icon: Building2, roles: ['ADMIN', 'RECEPTIONIST', 'DOCTOR'] },
+    { id: AppView.APPOINTMENTS, label: 'Schedule', icon: Calendar, roles: ['RECEPTIONIST', 'DOCTOR', 'ADMIN', 'OPTOMETRIST'] },
+    { id: AppView.QUEUE, label: 'Queue Flow', icon: Timer, roles: ['RECEPTIONIST', 'DOCTOR', 'ADMIN', 'NURSE', 'OPTOMETRIST', 'INTERN'] },
+    { id: AppView.DEPARTMENTS, label: 'Departments', icon: Building2, roles: ['ADMIN', 'RECEPTIONIST', 'DOCTOR', 'INTERN'] },
+    { id: AppView.TELEMEDICINE, label: 'TeleMedicine', icon: Video, roles: ['DOCTOR', 'RECEPTIONIST', 'ADMIN'] },
     
     // Clinical Core
-    { id: AppView.PATIENTS, label: 'Patients', icon: Users, roles: ['DOCTOR', 'RECEPTIONIST', 'ADMIN', 'NURSE'] },
-    { id: AppView.EXAM, label: 'EMR / Exam', icon: Eye, roles: ['DOCTOR'] },
+    { id: AppView.PATIENTS, label: 'Patients', icon: Users, roles: ['DOCTOR', 'RECEPTIONIST', 'ADMIN', 'NURSE', 'OPTOMETRIST', 'INTERN'] },
+    { id: AppView.EXAM, label: 'EMR / Exam', icon: Eye, roles: ['DOCTOR', 'OPTOMETRIST', 'INTERN'] },
+
+    // Advanced Technology
+    { id: AppView.ARVR_THERAPY, label: 'Vision Rehab (VR)', icon: Headset, roles: ['DOCTOR', 'ADMIN', 'NURSE', 'OPTOMETRIST'] },
+    { id: AppView.RESEARCH, label: 'Research & AI', icon: BookOpen, roles: ['DOCTOR', 'ADMIN', 'INTERN'] },
 
     // Clinical Departments
-    { id: AppView.NURSE_STATION, label: 'Nurse Station', icon: Stethoscope, roles: ['NURSE', 'DOCTOR', 'ADMIN'] },
+    { id: AppView.NURSE_STATION, label: 'Nurse Station', icon: Stethoscope, roles: ['NURSE', 'DOCTOR', 'ADMIN', 'INTERN'] },
     { id: AppView.LABORATORY, label: 'Laboratory', icon: TestTube, roles: ['LAB_TECH', 'DOCTOR', 'ADMIN'] },
-    { id: AppView.RADIOLOGY, label: 'Radiology / PACS', icon: HardDrive, roles: ['DOCTOR', 'ADMIN', 'LAB_TECH'] },
+    { id: AppView.RADIOLOGY, label: 'Radiology / PACS', icon: HardDrive, roles: ['DOCTOR', 'ADMIN', 'LAB_TECH', 'OPTOMETRIST'] },
     
     // Inpatient & Surgery
-    { id: AppView.OT_MANAGEMENT, label: 'OT & Surgery', icon: Scissors, roles: ['DOCTOR', 'NURSE', 'ADMIN'] },
+    { id: AppView.OT_MANAGEMENT, label: 'OT & Surgery', icon: Scissors, roles: ['DOCTOR', 'NURSE', 'ADMIN', 'INTERN'] },
     { id: AppView.WARD_MANAGEMENT, label: 'Inpatient (IPD)', icon: BedDouble, roles: ['NURSE', 'DOCTOR', 'ADMIN'] },
     { id: AppView.CSSD, label: 'CSSD', icon: Recycle, roles: ['NURSE', 'ADMIN'] },
-    { id: AppView.EQUIPMENT, label: 'Equipment', icon: Monitor, roles: ['ADMIN', 'DOCTOR'] },
+    { id: AppView.EQUIPMENT, label: 'Equipment', icon: Monitor, roles: ['ADMIN', 'DOCTOR', 'OPTOMETRIST'] },
     
     // Non-Clinical / Admin Modules
     { id: AppView.PHARMACY, label: 'Pharmacy', icon: Pill, roles: ['PHARMACIST', 'ADMIN', 'DOCTOR'] },
-    { id: AppView.OPTICALS, label: 'Optical Store', icon: Glasses, roles: ['PHARMACIST', 'ADMIN', 'STORE_MANAGER'] },
+    { id: AppView.OPTICALS, label: 'Optical Store', icon: Glasses, roles: ['PHARMACIST', 'ADMIN', 'STORE_MANAGER', 'OPTOMETRIST'] },
     { id: AppView.PURCHASE, label: 'Purchase', icon: ShoppingCart, roles: ['ADMIN', 'STORE_MANAGER', 'ACCOUNTANT'] },
     { id: AppView.STORES, label: 'General Stores', icon: Archive, roles: ['ADMIN', 'STORE_MANAGER'] },
     { id: AppView.LINEN, label: 'Linen & Laundry', icon: Shirt, roles: ['ADMIN', 'NURSE'] },
@@ -56,14 +60,17 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, user, onLo
     { id: AppView.BILLING, label: 'Billing & Claims', icon: CreditCard, roles: ['RECEPTIONIST', 'ADMIN', 'ACCOUNTANT'] },
     { id: AppView.ACCOUNTING, label: 'Accounting', icon: BarChart3, roles: ['ADMIN', 'ACCOUNTANT'] },
     { id: AppView.MIS, label: 'MIS Reports', icon: Activity, roles: ['ADMIN', 'DOCTOR', 'ACCOUNTANT'] },
+    { id: AppView.NABH_QUALITY, label: 'NABH Quality', icon: Award, roles: ['ADMIN', 'DOCTOR'] },
     { id: AppView.COMMUNICATION, label: 'Email & SMS', icon: Mail, roles: ['ADMIN', 'RECEPTIONIST'] },
 
-    { id: AppView.FEATURES, label: 'Doctor Benefits', icon: HelpCircle, roles: ['DOCTOR', 'ADMIN'] },
+    { id: AppView.FEATURES, label: 'Use Cases & Features', icon: HelpCircle, roles: ['DOCTOR', 'ADMIN', 'OPTOMETRIST', 'INTERN'] },
     { id: AppView.SETTINGS, label: 'Settings', icon: Settings, roles: ['ADMIN', 'DOCTOR'] },
-  ];
+  ], []);
 
-  // Filter menu items based on user role
-  const menuItems = allMenuItems.filter(item => item.roles.includes(user.role));
+  // Optimization: Memoize filtered menu items to avoid recalculation on every render
+  const menuItems = useMemo(() => {
+    return allMenuItems.filter(item => item.roles.includes(user.role));
+  }, [allMenuItems, user.role]);
 
   return (
     <div className="w-64 bg-white border-r border-slate-200 flex flex-col h-full shadow-sm z-10">
@@ -83,6 +90,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, user, onLo
             <span className="text-xs font-medium text-slate-500">
                 {isConnected ? 'Server Connected' : 'Offline'}
             </span>
+        </div>
+        <div className="flex items-center space-x-1 mt-1">
+             <Shield className="w-3 h-3 text-primary-500" />
+             <span className="text-[10px] text-primary-600 font-bold">Quantum-Safe (Kyber)</span>
         </div>
       </div>
 
@@ -113,6 +124,17 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, user, onLo
         })}
       </nav>
 
+      {/* Mobile App Promo */}
+      <div className="px-4 py-2">
+         <div className="bg-slate-900 rounded-xl p-4 flex items-center space-x-3 shadow-lg cursor-pointer hover:bg-slate-800 transition-colors">
+            <Smartphone className="w-8 h-8 text-white" />
+            <div>
+               <p className="text-xs text-slate-400">Download</p>
+               <p className="text-sm font-bold text-white">EyeCloud App</p>
+            </div>
+         </div>
+      </div>
+
       <div className="p-4 border-t border-slate-100">
         <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
           <div className="flex items-center space-x-3 mb-3">
@@ -139,4 +161,5 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, user, onLo
   );
 };
 
-export default Sidebar;
+// Optimization: Prevent unnecessary re-renders of the Sidebar 
+export default React.memo(Sidebar);

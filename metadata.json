@@ -1,5 +1,8 @@
 {
   "name": "EyeCloud PMS",
-  "description": "A next-generation cloud-based Ophthalmology Practice Management System featuring AI-powered clinical assistance, intuitive patient management, and comprehensive hospital workflows.",
-  "requestFramePermissions": []
+  "description": "A quantum-secure, AI-powered Ophthalmology System featuring WebXR AR/VR Therapy, Digital Twins, and ABDM-compliant workflows.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
 }

@@ -9,10 +9,35 @@ export const MOCK_PATIENTS: Patient[] = [
     age: 45,
     gender: 'Female',
     phone: '(555) 123-4567',
+    email: 'sarah.j@example.com',
     lastVisit: '2023-10-15',
+    nextAppointment: '2023-12-05',
     condition: 'Glaucoma Suspect',
     avatarUrl: 'https://picsum.photos/100/100?random=1',
-    type: 'Regular'
+    type: 'Regular',
+    insurance: {
+      provider: 'BlueCross',
+      policyNumber: 'BC-99887766',
+      validity: '2024-12-31',
+      coverageType: 'Comprehensive'
+    },
+    history: {
+      systemic: ['Hypertension'],
+      ocular: ['Family History of Glaucoma'],
+      allergies: ['Penicillin'],
+      medications: ['Latanoprost HS']
+    },
+    clinicalSnapshot: {
+      visualAcuityOD: '6/6',
+      visualAcuityOS: '6/9',
+      iopOD: '18 mmHg',
+      iopOS: '21 mmHg',
+      cdRatio: '0.4'
+    },
+    documents: [
+      { id: 'doc1', name: 'Oct-2023-OCT.pdf', type: 'Scan', date: '2023-10-15', url: '#' },
+      { id: 'doc2', name: 'Referral-Letter.pdf', type: 'Report', date: '2023-09-01', url: '#' }
+    ]
   },
   {
     id: '2',
@@ -20,10 +45,33 @@ export const MOCK_PATIENTS: Patient[] = [
     age: 62,
     gender: 'Male',
     phone: '(555) 987-6543',
+    email: 'm.chen@example.com',
     lastVisit: '2023-11-02',
     condition: 'Diabetic Retinopathy',
     avatarUrl: 'https://picsum.photos/100/100?random=2',
-    type: 'Insurance'
+    type: 'Insurance',
+    insurance: {
+      provider: 'Medicare',
+      policyNumber: 'MC-11223344',
+      validity: '2025-01-01',
+      coverageType: 'Standard'
+    },
+    history: {
+      systemic: ['Diabetes Type 2', 'Hyperlipidemia'],
+      ocular: ['Mild NPDR'],
+      allergies: ['None'],
+      medications: ['Metformin', 'Atorvastatin']
+    },
+    clinicalSnapshot: {
+      visualAcuityOD: '6/12',
+      visualAcuityOS: '6/9',
+      iopOD: '14 mmHg',
+      iopOS: '15 mmHg',
+      cdRatio: '0.3'
+    },
+    documents: [
+       { id: 'doc3', name: 'Blood-Work-Nov.pdf', type: 'Report', date: '2023-11-01', url: '#' }
+    ]
   },
   {
     id: '3',
@@ -34,7 +82,20 @@ export const MOCK_PATIENTS: Patient[] = [
     lastVisit: '2023-11-20',
     condition: 'Myopia',
     avatarUrl: 'https://picsum.photos/100/100?random=3',
-    type: 'Corporate'
+    type: 'Corporate',
+    history: {
+      systemic: [],
+      ocular: ['High Myopia'],
+      allergies: [],
+      medications: []
+    },
+    clinicalSnapshot: {
+      visualAcuityOD: '6/6',
+      visualAcuityOS: '6/6',
+      iopOD: '12 mmHg',
+      iopOS: '12 mmHg'
+    },
+    documents: []
   },
   {
     id: '4',
@@ -45,7 +106,14 @@ export const MOCK_PATIENTS: Patient[] = [
     lastVisit: '2023-10-05',
     condition: 'Cataract (Post-Op)',
     avatarUrl: 'https://picsum.photos/100/100?random=4',
-    type: 'Regular'
+    type: 'Regular',
+    history: {
+      systemic: ['Arthritis'],
+      ocular: ['Pseudophakia OD', 'Cataract OS'],
+      allergies: ['Sulfa'],
+      medications: []
+    },
+    documents: []
   },
   {
     id: '5',
@@ -56,7 +124,14 @@ export const MOCK_PATIENTS: Patient[] = [
     lastVisit: '2023-11-25',
     condition: 'Dry Eye Syndrome',
     avatarUrl: 'https://picsum.photos/100/100?random=5',
-    type: 'Regular'
+    type: 'Regular',
+    history: {
+      systemic: [],
+      ocular: ['MGD'],
+      allergies: [],
+      medications: ['Artificial Tears']
+    },
+    documents: []
   }
 ];
 

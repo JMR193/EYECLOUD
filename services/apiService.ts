@@ -23,6 +23,8 @@ export const api = {
         'LAB_TECH': { id: 'u6', name: 'Tom Tech', role: 'LAB_TECH', avatar: 'https://i.pravatar.cc/150?u=tech' },
         'STORE_MANAGER': { id: 'u7', name: 'Gary Stores', role: 'STORE_MANAGER', avatar: 'https://i.pravatar.cc/150?u=store' },
         'ACCOUNTANT': { id: 'u8', name: 'Alice Accounts', role: 'ACCOUNTANT', avatar: 'https://i.pravatar.cc/150?u=acc' },
+        'OPTOMETRIST': { id: 'u9', name: 'Opt. Rajiv Kumar', role: 'OPTOMETRIST', avatar: 'https://i.pravatar.cc/150?u=opto' },
+        'INTERN': { id: 'u10', name: 'Dr. Intern Priya', role: 'INTERN', avatar: 'https://i.pravatar.cc/150?u=intern' },
       };
 
       return mockUsers[role];
